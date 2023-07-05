@@ -1,0 +1,5 @@
+{
+	"tasks": {
+		"start": "deno run --unstable --allow-read --allow-env --allow-write src/index.ts"
+	}
+}
