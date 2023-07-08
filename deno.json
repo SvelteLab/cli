@@ -1,5 +1,6 @@
 {
 	"tasks": {
+		"build:npm": "deno run --allow-all ./tasks/build-npm.ts",
 		"start": "deno run --unstable --allow-read --allow-env --allow-write src/index.ts"
 	}
 }

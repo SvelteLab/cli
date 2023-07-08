@@ -13,7 +13,6 @@ function get_files(project: any) {
 		if ('directory' in file) {
 			retval.directory[file_name] = get_files(file.directory);
 		} else {
-			console.log(file_name, file);
 			retval.directory[file_name] = {
 				file: { contents: new Uint8Array(file.file.contents.buffer) },
 			};
