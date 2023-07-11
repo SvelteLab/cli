@@ -8,6 +8,7 @@ let [version] = Deno.args;
 if (!version) {
 	throw new Error('a version argument is required to build the npm package');
 }
+version = version.replace('v', '');
 
 await build({
 	entryPoints: [
@@ -41,7 +42,12 @@ await build({
 		bugs: {
 			url: 'https://github.com/sveltelab/cli/issues',
 		},
-		bin: './script/index.js',
+	},
+	mappings: {
+		'https://deno.land/x/cmd@v1.2.0/mod.ts': {
+			name: 'commander',
+			version: '^11.0',
+		},
 	},
 });
 
