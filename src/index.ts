@@ -1,7 +1,6 @@
 #!/usr/bin/node
 import { save } from './commands/save.ts';
 import { Command } from './deps/commander.ts';
-import { isDeno, isNode } from './deps/which_runtime.ts';
 const program = new Command('SvelteLab CLI');
 
 program
@@ -12,10 +11,6 @@ program
 
 program.command('load').action(() => {});
 
-if (isDeno) {
-	program.parse(Deno.args);
-} else if (isNode) {
-	program.parse();
-}
+program.parse();
 
 export { save };

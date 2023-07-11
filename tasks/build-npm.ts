@@ -1,4 +1,4 @@
-import { build, emptyDir } from 'https://deno.land/x/dnt@0.28.0/mod.ts';
+import { build, emptyDir } from 'https://deno.land/x/dnt@0.37.0/mod.ts';
 
 const outDir = './build/npm';
 
@@ -9,7 +9,6 @@ if (!version) {
 	throw new Error('a version argument is required to build the npm package');
 }
 version = version.replace('v', '');
-
 await build({
 	entryPoints: [
 		{
@@ -21,6 +20,7 @@ await build({
 	outDir,
 	shims: {
 		deno: true,
+		undici: true,
 	},
 	test: false,
 	typeCheck: false,
@@ -41,12 +41,6 @@ await build({
 		},
 		bugs: {
 			url: 'https://github.com/sveltelab/cli/issues',
-		},
-	},
-	mappings: {
-		'https://deno.land/x/cmd@v1.2.0/mod.ts': {
-			name: 'commander',
-			version: '^11.0',
 		},
 	},
 });
