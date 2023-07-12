@@ -8,7 +8,7 @@ let [version] = Deno.args;
 if (!version) {
 	throw new Error('a version argument is required to build the npm package');
 }
-version = version.replace('v', '');
+version = version.replace(/^v/, '');
 await build({
 	entryPoints: [
 		{
@@ -16,11 +16,13 @@ await build({
 			name: 'sveltelab',
 			path: './src/index.ts',
 		},
+		'./mod.ts',
 	],
 	outDir,
 	shims: {
 		deno: true,
 		undici: true,
+		prompts: true,
 	},
 	test: false,
 	typeCheck: false,

@@ -4,13 +4,12 @@ import { Command } from './deps/commander.ts';
 const program = new Command('SvelteLab CLI');
 
 program
-	.command('save <url> [destination]')
-	.action((url: string, destination: string) => {
-		save(url, destination);
+	.command('save <url_or_id> [destination]')
+	.description(
+		'save a sveltelab REPL in a local folder, you can either pass the id or the whole url and a destination folder',
+	)
+	.action((url_or_id: string, destination: string) => {
+		save(url_or_id, destination);
 	});
 
-program.command('load').action(() => {});
-
 program.parse();
-
-export { save };
