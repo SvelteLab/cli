@@ -1,3 +1,5 @@
+import { BASE_URL, VALID_HOSTNAMES } from '../env.ts';
+
 type File = { file: { contents: Uint8Array } };
 
 type Directory = {
@@ -76,13 +78,9 @@ export async function save(url: string, destination: string) {
 	try {
 		actual_url = new URL(`${url}.json`);
 	} catch (_e) {
-		actual_url = new URL(`https://sveltelab.dev/${url}.json`);
+		actual_url = new URL(`${BASE_URL}/${url}.json`);
 	}
-	const is_correct_url = [
-		'sveltelab.dev',
-		'www.sveltelab.dev',
-		'localhost',
-	].includes(actual_url.hostname);
+	const is_correct_url = VALID_HOSTNAMES.includes(actual_url.hostname);
 	if (!is_correct_url) {
 		console.log('Invalid URL: it must be a sveltelab project');
 		return;
@@ -113,7 +111,9 @@ export async function save(url: string, destination: string) {
 					return;
 				}
 			}
-		} catch (_e) {}
+		} catch (_e) {
+			/* empty */
+		}
 		if (!already_made_directory) {
 			try {
 				await Deno.mkdir(destination, { recursive: true });

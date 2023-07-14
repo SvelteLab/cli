@@ -1,10 +1,15 @@
 import { build, emptyDir } from 'https://deno.land/x/dnt@0.37.0/mod.ts';
+import { DEV } from '../src/env.ts';
 
 const outDir = './build/npm';
 
 await emptyDir(outDir);
 
-let [version] = Deno.args;
+let [version, dev_mode] = Deno.args;
+
+if (DEV && dev_mode !== '-d') {
+	throw new Error('You forgot to turn off dev mode!');
+}
 if (!version) {
 	throw new Error('a version argument is required to build the npm package');
 }
@@ -18,6 +23,7 @@ await build({
 		},
 		'./mod.ts',
 	],
+	scriptModule: false,
 	outDir,
 	shims: {
 		deno: true,
