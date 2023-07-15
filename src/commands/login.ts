@@ -2,8 +2,12 @@ import { open } from '../deps/open.ts';
 import { Select, Input, Secret, Number } from '../deps/cliffy.ts';
 import { Poketbase, AuthMethodsList } from '../deps/pocketbase.ts';
 import { BASE_URL, POKETBASE_URL } from '../env.ts';
+import { str_to_ui8a } from '../utils.ts';
 
-async function login_with_github(auth_methods: AuthMethodsList) {
+async function login_with_github(
+	auth_methods: AuthMethodsList,
+	pocketbase: Poketbase,
+) {
 	const abort_controller = new AbortController();
 	let port = 8000;
 	const github_login = auth_methods.authProviders.find(
@@ -57,36 +61,48 @@ async function login_with_github(auth_methods: AuthMethodsList) {
 		console.log('I wasnt able to launch the server, try again...');
 		return;
 	}
-	open(
-		`${github_login?.authUrl}${BASE_URL}/redirect/?port=${port}&cv=${github_login?.codeVerifier}`,
-	);
+	const REDIRECT_URI = `${BASE_URL}/redirect/?port=${port}`;
+	open(`${github_login?.authUrl}${REDIRECT_URI}`);
 	await server.finished;
 	if (
 		auth_request &&
 		auth_request instanceof Object &&
-		'token' in auth_request &&
-		typeof auth_request.token === 'string'
+		'code' in auth_request &&
+		typeof auth_request.code === 'string'
 	) {
+		await pocketbase
+			.collection('users')
+			.authWithOAuth2Code(
+				'github',
+				auth_request.code,
+				github_login?.codeVerifier ?? '',
+				REDIRECT_URI,
+			);
 		Deno.writeFile(
 			'.sveltelab-login',
-			new TextEncoder().encode(auth_request.token),
+			str_to_ui8a(pocketbase.authStore.exportToCookie()),
 		);
 		console.log('Authenticated!');
 	}
 }
 
-async function login_with_mail() {
+async function login_with_mail(pocketbase: Poketbase) {
 	const email = await Input.prompt({
 		message: 'Email',
 	});
 	const password = await Secret.prompt({
 		message: 'Password',
 	});
-	Deno.writeFile(
-		'.sveltelab-login',
-		new TextEncoder().encode(JSON.stringify({ email, password })),
-	);
-	console.log({ email, password });
+	try {
+		await pocketbase.collection('users').authWithPassword(email, password);
+		Deno.writeFile(
+			'.sveltelab-login',
+			str_to_ui8a(pocketbase.authStore.exportToCookie()),
+		);
+		console.log('Authenticated!');
+	} catch (_e) {
+		console.log("Can't login with this credentials.");
+	}
 }
 
 export async function login() {
@@ -108,11 +124,11 @@ export async function login() {
 			],
 		});
 		if (login_choice === 'github') {
-			await login_with_github(auth_methods);
+			await login_with_github(auth_methods, pocketbase);
 		} else {
-			await login_with_mail();
+			await login_with_mail(pocketbase);
 		}
 		return;
 	}
-	await login_with_github(auth_methods);
+	await login_with_github(auth_methods, pocketbase);
 }

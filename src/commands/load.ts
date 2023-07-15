@@ -1,29 +1,22 @@
 import { Poketbase } from '../deps/pocketbase.ts';
-import { POKETBASE_URL } from '../env.ts';
+import { BASE_URL, POKETBASE_URL } from '../env.ts';
 
 export async function load() {
 	try {
-		const login = await Deno.readTextFile('.sveltelab-login');
-		let token = login;
+		const token = await Deno.readTextFile('.sveltelab-login');
+		const pocketbase = new Poketbase(POKETBASE_URL);
+		pocketbase.authStore.loadFromCookie(token);
 		try {
-			const email_and_password = JSON.parse(login);
-			const pocketbase = new Poketbase(POKETBASE_URL);
-			try {
-				const result = await pocketbase
-					.collection('users')
-					.authWithPassword(
-						email_and_password.email,
-						email_and_password.password,
-					);
-				token = result.token;
-			} catch (e) {
-				/* empty */
-			}
-		} catch (e) {
-			/** */
+			const created = await pocketbase.collection('repls').create({
+				files: { test: { file: { contents: 'test' } } },
+				name: 'test',
+				user: pocketbase.authStore.model?.id,
+			});
+			console.log(`New REPL created ${BASE_URL}/${created.id}`);
+		} catch (_e) {
+			console.log(_e);
 		}
-		console.log(token);
-	} catch (e) {
+	} catch (_e) {
 		console.log('You are not logged in, try run `sveltelab login` first');
 	}
 }
