@@ -1,5 +1,5 @@
-import Poketbase, { AuthMethodsList as AML } from 'npm:pocketbase@^0.14.4';
+import Pocketbase, { AuthMethodsList as AML } from 'npm:pocketbase@^0.14.4';
 
-export { Poketbase };
+export { Pocketbase };
 
 export type AuthMethodsList = AML;

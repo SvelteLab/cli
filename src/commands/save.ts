@@ -1,12 +1,5 @@
 import { BASE_URL, VALID_HOSTNAMES } from '../env.ts';
-
-type File = { file: { contents: Uint8Array } };
-
-type Directory = {
-	directory: {
-		[filename: string]: File | Directory;
-	};
-};
+import { Directory } from '../types.ts';
 
 // deno-lint-ignore no-explicit-any
 function get_files(project: any) {
@@ -73,7 +66,7 @@ async function write_files(files: Directory, base_path: string) {
 	}
 }
 
-export async function save(url: string, destination: string) {
+export async function save(url: string, destination = '.') {
 	let actual_url;
 	try {
 		actual_url = new URL(`${url}.json`);

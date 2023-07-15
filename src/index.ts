@@ -16,12 +16,14 @@ program
 
 program
 	.command('login')
-	.description('log in sveltelab either with email and password or github')
+	.description('sog in sveltelab either with email and password or github')
 	.action(login);
 
 program
-	.command('load')
-	.description('Load a the current folder as a SvelteLab REPL')
-	.action(load);
+	.command('load [src_folder]')
+	.description(
+		'load a the [src_folder] as a SvelteLab REPL, defaults to the current folder, it need to be logged in',
+	)
+	.action((src_folder: string) => load(src_folder));
 
 program.parse();

@@ -1,12 +1,12 @@
 import { open } from '../deps/open.ts';
 import { Select, Input, Secret, Number } from '../deps/cliffy.ts';
-import { Poketbase, AuthMethodsList } from '../deps/pocketbase.ts';
-import { BASE_URL, POKETBASE_URL } from '../env.ts';
+import { Pocketbase, AuthMethodsList } from '../deps/pocketbase.ts';
+import { BASE_URL, POCKETBASE_URL } from '../env.ts';
 import { str_to_ui8a } from '../utils.ts';
 
 async function login_with_github(
 	auth_methods: AuthMethodsList,
-	pocketbase: Poketbase,
+	pocketbase: Pocketbase,
 ) {
 	const abort_controller = new AbortController();
 	let port = 8000;
@@ -86,7 +86,7 @@ async function login_with_github(
 	}
 }
 
-async function login_with_mail(pocketbase: Poketbase) {
+async function login_with_mail(pocketbase: Pocketbase) {
 	const email = await Input.prompt({
 		message: 'Email',
 	});
@@ -104,9 +104,8 @@ async function login_with_mail(pocketbase: Poketbase) {
 		console.log("Can't login with this credentials.");
 	}
 }
-
 export async function login() {
-	const pocketbase = new Poketbase(POKETBASE_URL);
+	const pocketbase = new Pocketbase(POCKETBASE_URL);
 	const auth_methods = await pocketbase.collection('users').listAuthMethods();
 	if (auth_methods.emailPassword) {
 		const login_choice = await Select.prompt({
