@@ -1,7 +1,7 @@
 import { Pocketbase } from '../deps/pocketbase.ts';
 import { BASE_URL, POCKETBASE_URL } from '../env.ts';
 import { Directory, PocketbaseFile } from '../types.ts';
-import { UINT8KIND, is_less_than_4mb } from '../utils.ts';
+import { UINT8KIND, get_appdata_path, is_less_than_4mb } from '../utils.ts';
 import { parse } from '../deps/path.ts';
 
 async function get_src_folder_as_webcontainer(src_folder: string) {
@@ -31,7 +31,9 @@ async function get_src_folder_as_webcontainer(src_folder: string) {
 
 export async function load(src_folder = '.') {
 	try {
-		const token = await Deno.readTextFile('.sveltelab-login');
+		const token = await Deno.readTextFile(
+			get_appdata_path('.sveltelab-login'),
+		);
 		const pocketbase = new Pocketbase(POCKETBASE_URL);
 		pocketbase.authStore.loadFromCookie(token);
 		try {
