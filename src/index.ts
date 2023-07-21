@@ -1,8 +1,8 @@
 #!/usr/bin/node
-import { save } from './commands/save.ts';
-import { login } from './commands/login.ts';
-import { load } from './commands/load.ts';
-import { Command } from './deps/commander.ts';
+import { save } from './commands/save.js';
+import { login } from './commands/login.js';
+import { load } from './commands/load.js';
+import { Command } from 'commander';
 const program = new Command('SvelteLab CLI');
 
 program

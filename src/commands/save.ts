@@ -1,5 +1,6 @@
-import { BASE_URL, VALID_HOSTNAMES } from '../env.ts';
-import { Directory } from '../types.ts';
+import { BASE_URL, VALID_HOSTNAMES } from '../env.js';
+import { Directory } from '../types.js';
+import { mkdir, rmdir, writeFile, stat } from 'node:fs/promises';
 
 // deno-lint-ignore no-explicit-any
 function get_files(project: any) {
@@ -33,26 +34,23 @@ async function write_files(files: Directory, base_path: string) {
 		const file = files.directory[file_name];
 		if ('directory' in file) {
 			try {
-				await Deno.mkdir(`${base_path}/${file_name}`, {
+				await mkdir(`${base_path}/${file_name}`, {
 					recursive: true,
 				});
 			} catch (_e) {
-				await Deno.remove(`${base_path}/${file_name}`, {
+				await rmdir(`${base_path}/${file_name}`, {
 					recursive: true,
 				});
-				await Deno.mkdir(`${base_path}/${file_name}`, {
+				await mkdir(`${base_path}/${file_name}`, {
 					recursive: true,
 				});
 			}
 			write_files(file, `${base_path}/${file_name}`);
 		} else {
 			try {
-				await Deno.writeFile(
+				await writeFile(
 					`${base_path}/${file_name}`,
 					file.file.contents,
-					{
-						create: true,
-					},
 				);
 				console.log(
 					`Writing "${base_path}/${file_name}" to the disk...`,
@@ -86,20 +84,20 @@ export async function save(url: string, destination = '.') {
 		});
 		let already_made_directory = false;
 		try {
-			const dir = await Deno.stat(destination);
-			if (dir.isFile || dir.isDirectory) {
+			const dir = await stat(destination);
+			if (dir.isFile() || dir.isDirectory()) {
 				const want_to_delete = confirm(
 					`The destination ${
-						dir.isFile
+						dir.isFile()
 							? "exist and it's a file"
 							: 'folder already exist'
 					}, do you want to delete it?`,
 				);
 				if (want_to_delete) {
-					await Deno.remove(destination, { recursive: true });
-					await Deno.mkdir(destination, { recursive: true });
+					await rmdir(destination, { recursive: true });
+					await mkdir(destination, { recursive: true });
 					already_made_directory = true;
-				} else if (dir.isFile) {
+				} else if (dir.isFile()) {
 					console.error('Abort saving...');
 					return;
 				}
@@ -109,7 +107,7 @@ export async function save(url: string, destination = '.') {
 		}
 		if (!already_made_directory) {
 			try {
-				await Deno.mkdir(destination, { recursive: true });
+				await mkdir(destination, { recursive: true });
 			} catch (_e) {
 				/* empty */
 			}

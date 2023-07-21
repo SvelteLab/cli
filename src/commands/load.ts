@@ -1,24 +1,27 @@
-import { Pocketbase } from '../deps/pocketbase.ts';
-import { BASE_URL, POCKETBASE_URL } from '../env.ts';
-import { Directory, PocketbaseFile } from '../types.ts';
-import { UINT8KIND, get_appdata_path, is_less_than_4mb } from '../utils.ts';
-import { parse } from '../deps/path.ts';
+import Pocketbase from 'pocketbase';
+import { BASE_URL, POCKETBASE_URL } from '../env.js';
+import { Directory, PocketbaseFile } from '../types.js';
+import { UINT8KIND, get_appdata_path, is_less_than_4mb } from '../utils.js';
+import { parse } from 'node:path';
+import { readFile, readdir } from 'node:fs/promises';
 
 async function get_src_folder_as_webcontainer(src_folder: string) {
-	const dir = await Deno.readDir(src_folder);
+	const dir = await readdir(src_folder, {
+		withFileTypes: true,
+	});
 	const webcontainer_files: Record<
 		string,
 		Directory<PocketbaseFile> | PocketbaseFile
 	> = {};
 	for await (const file of dir) {
-		if (file.isFile) {
-			const ui8a_file = await Deno.readFile(`${src_folder}/${file.name}`);
+		if (file.isFile()) {
+			const ui8a_file = await readFile(`${src_folder}/${file.name}`);
 			webcontainer_files[file.name] = {
 				file: {
 					contents: { kind: UINT8KIND, buffer: [...ui8a_file] },
 				},
 			};
-		} else if (file.isDirectory) {
+		} else if (file.isDirectory()) {
 			webcontainer_files[file.name] = {
 				directory: await get_src_folder_as_webcontainer(
 					`${src_folder}/${file.name}`,
@@ -31,9 +34,9 @@ async function get_src_folder_as_webcontainer(src_folder: string) {
 
 export async function load(src_folder = '.') {
 	try {
-		const token = await Deno.readTextFile(
-			get_appdata_path('.sveltelab-login'),
-		);
+		const token = await readFile(get_appdata_path('.sveltelab-login'), {
+			encoding: 'utf-8',
+		});
 		const pocketbase = new Pocketbase(POCKETBASE_URL);
 		pocketbase.authStore.loadFromCookie(token);
 		try {
@@ -53,7 +56,7 @@ export async function load(src_folder = '.') {
 			} catch (e) {
 				console.log(
 					`I was unable to create the new REPL: ${
-						e.message ?? 'unknown'
+						(e as any).message ?? 'unknown'
 					}`,
 				);
 			}
