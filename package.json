@@ -1,6 +1,6 @@
 {
   "name": "sveltelab",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "description": "SvelteLab CLI, to interact with sveltelab from your terminal",
   "type": "module",
   "bin": "/dist/index.js",
@@ -16,7 +16,7 @@
     "build:watch": "tsc --watch",
     "start": "node ./dist/index.js",
     "changeset": "changeset",
-	"publish": "pnpm run build && changeset publish"
+    "publish": "pnpm run build && changeset publish"
   },
   "keywords": [],
   "author": "",
