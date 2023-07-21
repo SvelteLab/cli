@@ -1,4 +1,4 @@
-const DEV = true;
+const DEV = false;
 
 const VALID_HOSTNAMES = DEV
 	? ['localhost', 'sveltelab.dev', 'www.sveltelab.dev']

@@ -1,9 +1,15 @@
 import Pocketbase from 'pocketbase';
 import { BASE_URL, POCKETBASE_URL } from '../env.js';
 import { Directory, PocketbaseFile } from '../types.js';
-import { UINT8KIND, get_appdata_path, is_less_than_4mb } from '../utils.js';
+import {
+	UINT8KIND,
+	check_cancel,
+	get_appdata_path,
+	is_less_than_4mb,
+} from '../utils.js';
 import { parse } from 'node:path';
 import { readFile, readdir } from 'node:fs/promises';
+import { intro, cancel, text, outro } from '@clack/prompts';
 
 async function get_src_folder_as_webcontainer(src_folder: string) {
 	const dir = await readdir(src_folder, {
@@ -33,6 +39,7 @@ async function get_src_folder_as_webcontainer(src_folder: string) {
 }
 
 export async function load(src_folder = '.') {
+	intro('Loading you Project in sveltelab...');
 	try {
 		const token = await readFile(get_appdata_path('.sveltelab-login'), {
 			encoding: 'utf-8',
@@ -42,30 +49,35 @@ export async function load(src_folder = '.') {
 		try {
 			const files = await get_src_folder_as_webcontainer(src_folder);
 			if (!is_less_than_4mb(files)) {
-				console.log("You can't load more than 4mb project, sorry. :(");
+				cancel("You can't load more than 4mb project, sorry. :(");
 				return;
 			}
 			const { name } = parse(src_folder);
+			const actual_name = await text({
+				message: 'How would you like to name your REPL?',
+				initialValue: name,
+			});
+			check_cancel(actual_name);
 			try {
 				const created = await pocketbase.collection('repls').create({
 					files,
-					name,
+					name: actual_name,
 					user: pocketbase.authStore.model?.id,
 				});
-				console.log(`New REPL created ${BASE_URL}/${created.id}`);
+				outro(`New REPL created ${BASE_URL}/${created.id}`);
 			} catch (e) {
-				console.log(
+				cancel(
 					`I was unable to create the new REPL: ${
 						(e as any).message ?? 'unknown'
 					}`,
 				);
 			}
 		} catch (_e) {
-			console.log(
+			cancel(
 				'I was unable to read all the files in [src_folder]...try again.',
 			);
 		}
 	} catch (_e) {
-		console.log('You are not logged in, try run `sveltelab login` first');
+		cancel('You are not logged in, try run `sveltelab login` first');
 	}
 }
