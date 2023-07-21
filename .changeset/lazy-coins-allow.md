@@ -1,0 +1,5 @@
+---
+'sveltelab': patch
+---
+
+fix shebang?

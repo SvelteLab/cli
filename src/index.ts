@@ -1,4 +1,4 @@
-#!/usr/bin/node
+#!/usr/bin/env node
 import { save } from './commands/save.js';
 import { login } from './commands/login.js';
 import { load } from './commands/load.js';
