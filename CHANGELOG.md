@@ -1,5 +1,11 @@
 # sveltelab
 
+## 0.0.18
+
+### Patch Changes
+
+-   fde0e25: fix shebang?
+
 ## 0.0.17
 
 ### Patch Changes
