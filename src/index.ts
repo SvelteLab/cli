@@ -6,9 +6,10 @@ import { Command } from 'commander';
 const program = new Command('SvelteLab CLI');
 
 program
-	.command('save <url_or_id> [destination]')
+	.command('down <url_or_id> [destination]')
+	.alias('download')
 	.description(
-		'save a sveltelab REPL in a local folder, you can either pass the id or the whole url and a destination folder',
+		'download a sveltelab REPL in a local folder, you can either pass the id or the whole url and a destination folder',
 	)
 	.action((url_or_id: string, destination: string) => {
 		save(url_or_id, destination);
@@ -16,13 +17,14 @@ program
 
 program
 	.command('login')
-	.description('sog in sveltelab either with email and password or github')
+	.description('log in sveltelab either with email and password or github')
 	.action(login);
 
 program
-	.command('load [src_folder]')
+	.command('up [src_folder]')
+	.alias('upload')
 	.description(
-		'load a the [src_folder] as a SvelteLab REPL, defaults to the current folder, it need to be logged in',
+		'load the [src_folder] as a SvelteLab REPL, defaults to the current folder, it need to be logged in',
 	)
 	.action((src_folder: string) => load(src_folder));
 
