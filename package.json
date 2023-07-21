@@ -1,6 +1,6 @@
 {
   "name": "sveltelab",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "SvelteLab CLI, to interact with sveltelab from your terminal",
   "type": "module",
   "bin": "/dist/index.js",

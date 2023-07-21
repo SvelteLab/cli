@@ -1,5 +1,11 @@
 # sveltelab
 
+## 0.1.1
+
+### Patch Changes
+
+-   1b0b84a: change name of commands
+
 ## 0.1.0
 
 ### Minor Changes
