@@ -11,6 +11,8 @@ import { parse } from 'node:path';
 import { readFile, readdir } from 'node:fs/promises';
 import { intro, cancel, text, outro } from '@clack/prompts';
 
+const BLACKLIST = ['node_modules'];
+
 async function get_src_folder_as_webcontainer(src_folder: string) {
 	const dir = await readdir(src_folder, {
 		withFileTypes: true,
@@ -20,6 +22,7 @@ async function get_src_folder_as_webcontainer(src_folder: string) {
 		Directory<PocketbaseFile> | PocketbaseFile
 	> = {};
 	for await (const file of dir) {
+		if (BLACKLIST.includes(file.name)) continue;
 		if (file.isFile()) {
 			const ui8a_file = await readFile(`${src_folder}/${file.name}`);
 			webcontainer_files[file.name] = {
