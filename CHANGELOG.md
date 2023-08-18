@@ -1,5 +1,11 @@
 # sveltelab
 
+## 0.1.2
+
+### Patch Changes
+
+-   a8e69bf: blacklist node_modules from sveltelab up
+
 ## 0.1.1
 
 ### Patch Changes
